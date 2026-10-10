@@ -18,6 +18,8 @@
 typedef void (*t_validar_argumentos) (int argc, char * argv[]);
 
 void validar_argumentos_placa (int argc, char * argv[]);
+void validar_argumentos_storage (int argc, char * argv[]);
+void validar_argumentos_planificador (int argc, char * argv[]);
 void validar_un_argumento (int argc, char * argv[]);
 void validar_dos_argumento (int argc, char * argv[]);
 void validar_ruta_configuracion (char * ruta_config);

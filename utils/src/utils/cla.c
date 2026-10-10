@@ -12,6 +12,30 @@ void validar_argumentos_placa (int argc, char * argv[])
 	return;
 }
 
+void validar_argumentos_storage (int argc, char * argv[])
+{
+	if (argc != CAMPO_EJECUTABLE + CAMPO_CONFIGURACION)
+	{
+		fprintf (stderr, "%s\n", MSJ_ERROR_UN_ARGUMENTO);
+		exit (ERROR_CANTIDAD_DE_ARGUMENTOS);
+	}
+	validar_ruta_configuracion (argv[POSICION_RUTA_CONFIGURACION]);
+	
+	return;
+}
+
+void validar_argumentos_planificador (int argc, char * argv[])
+{
+	if (argc != CAMPO_EJECUTABLE + CAMPO_CONFIGURACION + CAMPO_IDENTIFICADOR)
+	{
+		fprintf (stderr, "%s\n", MSJ_ERROR_DOS_ARGUMENTO);
+		exit (ERROR_CANTIDAD_DE_ARGUMENTOS);
+	}
+	validar_ruta_configuracion (argv[POSICION_RUTA_CONFIGURACION]);
+	
+	return;
+}
+
 void validar_un_argumento (int argc, char * argv[])
 {
 	if (argc != CAMPO_EJECUTABLE + CAMPO_CONFIGURACION)

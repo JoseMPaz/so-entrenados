@@ -5,9 +5,13 @@ Compilar: make
 Ejecutar: ./bin/placa placa.config
 */
 
+/* Teoria
+Cantidad de Marcos(memoria_de_datos) = tam_memoria / tam_pagina
+un Job puede tener muchas más páginas que "Cantidad de Marcos(memoria_de_datos)"
+*/
+
 int main (int argc, char * argv[]) 
 {
-	int socket_escucha;
 	struct sigaction accion = {0};// Inicializa la estructura 'accion' llenando todos sus campos con 0.
 
 	// Asigna la función 'manejar_sigint' como el manejador (handler) de la señal.
@@ -31,6 +35,7 @@ int main (int argc, char * argv[])
 	t_validar_argumentos validar_argumentos = validar_argumentos_placa;//Setea la funcion validar_argumentos
 	t_cargar_configuracion cargar_configuracion = cargar_configuracion_placa;//Setea la funcion cargar_configuracion
 	t_config * configuracion = NULL;
+	int socket_escucha;
 	pthread_t hilo_consola;
 	pthread_t hilo_servidor;
 	
@@ -42,7 +47,8 @@ int main (int argc, char * argv[])
 	log_info (historial, "Inicio del Módulo Placa");// LOG 1: Optativo
 	
 	instrucciones_de_jobs = list_create ();	/*Estructura administrativa, sus nodos tienen pid e instrucciones*/
-	memoria_de_datos = crear_memoria_de_datos ();/*Espacio  de trabajo de los Jobs*/
+	memoria_de_datos = crear_memoria_de_datos ();/*Espacio  de trabajo de los Jobs (void *) */
+	offload = crear_offload ();
 	
 	/*Inicio Prueba de memoria de instrucciones*/
 	list_add (instrucciones_de_jobs, crear_codigo_proceso (7, "no_hacer_nada.asm"));
@@ -52,7 +58,7 @@ int main (int argc, char * argv[])
 	list_iterate(instrucciones_de_jobs, imprimir_instrucciones);
 	/*Fin Prueba de memoria de instrucciones*/
 	
-	socket_escucha = crear_socket (SERVIDOR, NULL, puerto_escucha);
+	socket_escucha = crear_socket (SERVIDOR, NULL, puerto_escucha);	
 	
 	pthread_create (&hilo_servidor, NULL, servidor_placa, (void *) &socket_escucha);
 	pthread_create (&hilo_consola, NULL, consola, NULL);
@@ -67,6 +73,7 @@ int main (int argc, char * argv[])
 	
 	destruir_historial (historial);
 	destruir_configuracion (configuracion);
+	destruir_offload (offload);
 		
     saludar("placa");
     
@@ -75,21 +82,23 @@ int main (int argc, char * argv[])
 
 /*
 Módulo: Placa
+
 ✅Este módulo se encarga de administrar la memoria del sistema. 
 ✅En él se almacenan:
 ✅Las instrucciones de los Jobs 
-*El espacio de trabajo sobre el que operan los Jobs.
+✅El espacio de trabajo sobre el que operan los Jobs: memoria_de_datos.
 ------------------------------------------------------------------------------------------------- 
-Lineamiento e Implementación
-Al iniciar el modulo Placa, se crea un servidor multihilo que se encargará de gestionar de manera concurrente las
-peticiones del Planificador y de los Cores. 
-
-A lo largo de la ejecución se podrán conectar nuevos Cores, por lo que se deberá mantener la escucha a 
-nuevas conexiones siempre activa.
-
-✅> ./bin/placa [Archivo Config]
+✅Lineamiento e Implementación
 ------------------------------------------------------------------------------------------------- 
-Memoria de Instrucciones
+✅Al iniciar el modulo Placa, se crea un servidor multihilo que se encargará de gestionar de manera concurrente las
+✅peticiones de conexion del Planificador y de los Cores y tambien para que haga algo por ellos. 
+
+✅A lo largo de la ejecución se podrán conectar nuevos Cores, por lo que se deberá mantener la escucha a 
+✅nuevas conexiones siempre activa.
+✅> ./bin/placa placa.config
+------------------------------------------------------------------------------------------------- 
+✅Memoria de Instrucciones
+------------------------------------------------------------------------------------------------- 
 ✅En esta sección la Placa contendrá las instrucciones de los Jobs, 
 ✅que le serán solicitadas por los diferentes Cores. 
 
@@ -103,24 +112,25 @@ Memoria de Instrucciones
 ✅La Placa deberá ser capaz de enviar la instrucción correspondiente a cada pedido del Core 
 ✅sin haber una restricción específica de cómo se deben obtener las instrucciones.
 ------------------------------------------------------------------------------------------------- 
-Memoria de Usuario
-✅Esquema de memoria y Estructuras
+✅Memoria de Usuario
+------------------------------------------------------------------------------------------------- 
+✅Esquema de memoria y Estructuras:
 La memoria de datos de la Placa utilizará un esquema de paginación con memoria virtual, 
 con asignación dinámica y alcance global. 
 
-El tamaño total de 
-*la memoria de usuario y 
-*el tamaño de página 
-estarán definidos por archivo de configuración.
+✅El tamaño total de 
+✅*la memoria de usuario y 
+✅*el tamaño de página 
+✅estarán definidos por archivo de configuración.
 
-Se deberá implementar paginación bajo demanda: 
-los Jobs empezarán sin marcos asignados, 
-y una página pasará a ocupar un marco recién cuando el Job la acceda.
+✅Se deberá implementar paginación bajo demanda: 
+✅los Jobs empezarán sin frames asignados, 
+✅y una página pasará a ocupar un marco recién cuando el Job la acceda.
 ------------------------------------------------------------------------------------------------- 
 La Placa contará como mínimo con 2 estructuras:
 
-●​ Un espacio contiguo de memoria (representado por un void *), que será la memoria de datos del sistema.
-●​ Una tabla de páginas por cada Job.
+✅●​ Un espacio contiguo de memoria (representado por un void *), que será la memoria de datos del sistema.
+✅●​ Una tabla de páginas por cada Job.
 
 ✅Las tablas de páginas: son estructuras administrativas que no deben guardarse dentro de la memoria de datos.
 

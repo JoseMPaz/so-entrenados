@@ -10,8 +10,6 @@
 
 #define TAM_LEIDO 100
 
-extern volatile sig_atomic_t salir;
-
 typedef enum
 {
 	INFO,
@@ -22,6 +20,5 @@ void * consola (void * arg);
 void mostrar_consola (void);
 char * leer_consola (void);
 bool hacer_consola(char *leido);
-void manejar_sigint(int sig); 
 
 #endif

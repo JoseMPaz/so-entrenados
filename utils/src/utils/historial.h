@@ -8,3 +8,5 @@ t_log * crear_historial (char * archivo_log, char * etiqueta_log, t_log_level le
 void destruir_historial (t_log * log);
 
 #endif
+
+

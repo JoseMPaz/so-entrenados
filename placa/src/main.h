@@ -13,8 +13,8 @@
 #include <utils/hello.h>
 #include <utils/cla.h>
 #include <utils/historial.h>
-#include <utils/configuracion.h>
 #include <utils/conexion.h>
+#include "configuracion_placa.h"
 #include <commons/collections/list.h>
 #include "estructuras_administrativas.h"
 #include "consola.h"
@@ -26,7 +26,7 @@
 
 /* ========== Declaracion de Variables Globales ========== */
 
-/*Para escribir en placa.log*/
+/*Para desescribir eventos en el modulo placa*/
 t_log * historial = NULL;
 
 /*Memoria de Instrucciones*/
@@ -37,9 +37,14 @@ void * memoria_de_datos = NULL;
 //Tablas de Paginas: Lista con nodos pid-tabla de pagina
 
 /*Offload*/
-
+FILE * offload = NULL;
 
 volatile sig_atomic_t salir = 0;// Definición de la bandera segura ante un CTR+C
+
+int jid_a_buscar; 
+
+t_bitarray* bitarray_offload;
+uint32_t bloques_totales_offload;
 
 //Variables de configuración
 char * puerto_escucha;

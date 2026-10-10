@@ -1,13 +1,106 @@
-#include <utils/hello.h>
-#include <utils/cla.h>
+#include "main.h"
+
+/*
+Compilar: make
+Ejecutar: ./bin/planificador planificador.config no_hacer_nada.asm
+*/
 
 int main(int argc, char * argv[]) 
 {
-	t_validar_argumentos validar_argumentos = validar_dos_argumento;
+	struct sigaction accion = {0};// Inicializa la estructura 'accion' llenando todos sus campos con 0.
+
+	// Asigna la función 'manejar_sigint' como el manejador (handler) de la señal.
+	// Esta es la función que se ejecutará automáticamente cuando llegue la señal.
+	accion.sa_handler = manejar_sigint;
+	// Inicializa y vacía el conjunto de señales 'sa_mask'.
+	// Durante la ejecución del handler, no se bloqueará ninguna otra señal adicional.
+	sigemptyset(&accion.sa_mask);
+	// Configura las flags en 0. Esto desactiva comportamientos especiales y usa
+	// el comportamiento predeterminado del sistema operativo para esta señal.
+	accion.sa_flags = 0;
+	
+	// Registra la nueva configuración asociando la señal SIGINT (Ctrl+C) con 'accion'.
+	// Si la llamada al sistema devuelve -1, significa que hubo un error en el registro.
+	if (sigaction(SIGINT, &accion, NULL) == -1)
+	{
+    	perror("sigaction");// Imprime en la salida de error estándar (stderr) el motivo del fallo
+    	return EXIT_FAILURE; // Finaliza el programa indicando un estado de error al sistema operativo
+	}
+	
+	t_validar_argumentos validar_argumentos = validar_argumentos_planificador;//Setea la funcion validar_argumentos
+	t_cargar_configuracion cargar_configuracion = cargar_configuracion_planificador;//Setea la funcion cargar_configuracion
+	t_config * configuracion = NULL;
+	t_paquete * paquete;
+	t_operacion operacion;
+	int socket_escucha;
+	pthread_t hilo_servidor;
+	
 	validar_argumentos (argc, argv);
+	configuracion = crear_configuracion (argv[PATH_CONFIG]);
+	cargar_configuracion (configuracion);
+	historial = crear_historial ( "planificador.log", "PLANIFICADOR_LOG", log_level); 
+	
+	
+	cores = list_create ();// Esta lista permite administrar los cores que se tiene a disposicion para ejecutar los Jobs
+	if (sem_init(&mutex_cores, 0, 1/*Protege un recurso lista*/) != 0) //
+	{
+        perror("Error al inicializar el semáforo mutex_cores");
+        return EXIT_FAILURE;
+    }
+    
+    if (sem_init(&sem_core_disponible, 0, 0/*Inicia sin cores disponibles*/) != 0) 
+	{
+        perror("Error al inicializar el semáforo sem_core_disponible");
+        return EXIT_FAILURE;
+    }
+	        
+    /* == Inicio Handshake Planificador - Placa == */
+    socket_planificador_to_placa = crear_socket (CLIENTE, ip_placa, puerto_placa);
+    conectar_a_servidor (socket_planificador_to_placa, ip_placa, puerto_placa);
+    log_info (historial, "%s%s", "Solicitud de conexión: ", "## Módulo: Placa");
+    paquete = crear_paquete (SOLICITUD_CONEXION_PLANIF_TO_PLACA);
+    enviar_paquete (paquete, socket_planificador_to_placa);
+	destruir_paquete (paquete);
+	operacion = recibir_operacion (socket_planificador_to_placa);
+	
+	if (operacion == RESPUESTA_CONEXION_PLACA_TO_PLANIF_OK)
+	{
+		log_info (historial, "%s%s", "Conexión confirmada: ", "## Módulo: Placa");
+	}
+	else
+	{
+		fprintf (stderr, "%s\n", "Error: No se pudo conectar Planificador a Placa");
+		exit(1);
+	}
+    /* == Final Handshake Planificador - Placa == */
+    
+    
+    /* == Inicio Handshake Planificador - Storage == */
+		//Aca hara lo mismo pero para storage - Por ahora no me voy a conectar aun a storage
+	/* == Final Handshake Planificador - Storage == */
+	
+	/*Servidor para aceptar conexiones de core*/
+	socket_escucha = crear_socket (SERVIDOR, NULL, puerto_escucha);
+	pthread_create (&hilo_servidor, NULL, servidor_planificador, (void *) &socket_escucha);
+	
+	/*Planificador de corto plazo*/
+	
+	/*Planificador de corto plazo*/
+	
+	/*Crear JBC del proceso padre y se encola en new, luego el planificador de largo plazo al detectarlo
+	y si el grado de multiprogramacion se lo permite, pide a placa que cree su estructura administrativa,
+	le envia el jid y path_job, una vez placa le confirma que lo pudo hacer, se transiciona 
+	el job desde new a ready */
+	
+	
+    pthread_join (hilo_servidor, NULL);
+    
+    destruir_historial (historial);
+	destruir_configuracion (configuracion);
+	close(socket_planificador_to_placa);
+	sem_destroy(&mutex_cores);
+	destruir_lista_cores (cores);
     saludar("planificador");
-    
-    
     return 0;
 }
 

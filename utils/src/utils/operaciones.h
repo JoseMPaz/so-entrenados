@@ -3,15 +3,6 @@
 
 typedef enum
 {
-	/* Storage */
-	//SAVE_CHECKPOINT, LOAD_CHECKPOINT, DELETE_CHECKPOINT
-	
-	/* Core */
-		
-	/* Planificador */
-	
-	/* Placa */
-	
 	// ==========================================
     // 1. PETICIONES HACIA LA PLACA
     // ==========================================
@@ -33,7 +24,7 @@ typedef enum
     PLANIF_TO_PLACA_EXIT_JOB,
 
     // ==========================================
-    // 2. PETICIONES DE CORE A PLANIFICADOR
+    // 2. COMUNICACIÓN CORE <-> PLANIFICADOR
     // ==========================================
     CORE_TO_PLANIF_PAGE_FAULT,
     CORE_TO_PLANIF_INTERRUPT,
@@ -47,13 +38,35 @@ typedef enum
     CORE_TO_PLANIF_SYSCALL_LOAD_CHECKPOINT,
     CORE_TO_PLANIF_SYSCALL_DELETE_CHECKPOINT,
     CORE_TO_PLANIF_SYSCALL_EXIT,
+    
+    // Respuestas del Planificador al Core para Syscalls no bloqueantes (como ALLOC):
+    PLANIF_TO_CORE_ALLOC_OK,
 
     // ==========================================
     // 3. PETICIONES DE PLANIFICADOR A STORAGE
     // ==========================================
     PLANIF_TO_STORAGE_SAVE_CHECKPOINT,
     PLANIF_TO_STORAGE_LOAD_CHECKPOINT,
-    PLANIF_TO_STORAGE_DELETE_CHECKPOINT
-}t_operacion;
+    PLANIF_TO_STORAGE_DELETE_CHECKPOINT,
+    
+    // ==========================================
+    // 4. CONEXIONES DE MODULOS
+    // ==========================================
+    SOLICITUD_CONEXION_PLANIF_TO_PLACA,
+    RESPUESTA_CONEXION_PLACA_TO_PLANIF_OK,
+    SOLICITUD_CONEXION_CORE_TO_PLACA,
+    RESPUESTA_CONEXION_PLACA_TO_CORE_OK,
+    SOLICITUD_CONEXION_PLANIF_TO_STORAGE,
+    RESPUESTA_CONEXION_STORAGE_TO_PLANIF_OK,
+    SOLICITUD_CONEXION_CORE_TO_PLANIF,         
+    RESPUESTA_CONEXION_PLANIF_TO_CORE_OK,
+    RESPUESTA_CONEXION_FALLIDA,
+
+    // ==========================================
+    // 5. RESPUESTAS GENÉRICAS PARA OPERACIONES
+    // ==========================================
+    OPERACION_OK,
+    OPERACION_ERROR
+} t_operacion;
 
 #endif

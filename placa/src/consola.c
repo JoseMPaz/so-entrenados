@@ -96,15 +96,4 @@ bool hacer_consola(char *leido)
     return true;
 }
 
-// Manejador de la señal SIGINT (Ctrl+C). Se ejecuta de manera asíncrona 
-// cuando el sistema operativo interrumpe el flujo normal del programa.
-void manejar_sigint(int sig) 
-{
-    // Escribe el valor 1 en 'salir' de forma estrictamente atómica a nivel de hardware.
-    // __ATOMIC_SEQ_CST (Sequential Consistency) garantiza un ordenamiento total: 
-    // asegura que todos los hilos vean este cambio de manera inmediata y sincronizada,
-    // eliminando las condiciones de carrera (Data Races) sin necesidad de usar un mutex.
-    __atomic_store_n(&salir, 1, __ATOMIC_SEQ_CST);
-}
-
 

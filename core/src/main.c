@@ -1,6 +1,7 @@
 #include <utils/hello.h>
 #include <utils/cla.h>
 
+
 int main(int argc, char* argv[]) 
 {
 	t_validar_argumentos validar_argumentos = validar_dos_argumento;

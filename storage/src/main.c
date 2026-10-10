@@ -1,27 +1,55 @@
-#include <utils/cla.h>
-#include <utils/conexion.h>
-#include "gestion.h"
-#include <utils/configuracion.h>
+#include "main.h"
+
 #define PATH_CONFIG 1
+
+/*
+Compilar: make
+Ejecutar: ./bin/storage storage.config
+*/
 
 int main(int argc, char* argv[]) 
 {
-	//int * socket_escucha = NULL;
-	//pthread_t hilo_servidor;
-	t_validar_argumentos validar_argumentos = validar_un_argumento;
-	
-	
-	validar_argumentos (argc, argv);
-	//t_config * config = iniciar_config (argv[PATH_CONFIG]);
+	struct sigaction accion = {0};// Inicializa la estructura 'accion' llenando todos sus campos con 0.
 
-	//socket_escucha = (int *) malloc (sizeof(int));
-	//*socket_escucha = crear_socket ( SERVIDOR, NULL, config_get_string_value(config,"PUERTO_ESCUCHA") );
-    //pthread_create (&hilo_servidor, NULL, procesar_peticiones_storage, (void *)socket_escucha);
-    
+	// Asigna la función 'manejar_sigint' como el manejador (handler) de la señal.
+	// Esta es la función que se ejecutará automáticamente cuando llegue la señal.
+	accion.sa_handler = manejar_sigint;
+	// Inicializa y vacía el conjunto de señales 'sa_mask'.
+	// Durante la ejecución del handler, no se bloqueará ninguna otra señal adicional.
+	sigemptyset(&accion.sa_mask);
+	// Configura las flags en 0. Esto desactiva comportamientos especiales y usa
+	// el comportamiento predeterminado del sistema operativo para esta señal.
+	accion.sa_flags = 0;
+	
+	// Registra la nueva configuración asociando la señal SIGINT (Ctrl+C) con 'accion'.
+	// Si la llamada al sistema devuelve -1, significa que hubo un error en el registro.
+	if (sigaction(SIGINT, &accion, NULL) == -1)
+	{
+    	perror("sigaction");// Imprime en la salida de error estándar (stderr) el motivo del fallo
+    	return EXIT_FAILURE; // Finaliza el programa indicando un estado de error al sistema operativo
+	}
+	
+	t_validar_argumentos validar_argumentos = validar_argumentos_storage;
+	t_cargar_configuracion cargar_configuracion = cargar_configuracion_storage;//Setea la funcion cargar_configuracion
+	t_config * configuracion = NULL;
+	int socket_escucha;
+	pthread_t hilo_servidor;
+		
+	validar_argumentos (argc, argv);
+	configuracion = crear_configuracion (argv[PATH_CONFIG]);
+	cargar_configuracion (configuracion);
+	
+	historial = crear_historial ( "storage.log", "STORAGE_LOG", log_level); 
+
+	socket_escucha = crear_socket (SERVIDOR, NULL, puerto_escucha);	
+	pthread_create (&hilo_servidor, NULL, servidor_storage, (void *) &socket_escucha);
+	pthread_join (hilo_servidor, NULL);
+
     saludar("storage");
     
-    //pthread_join (hilo_servidor, NULL);
-    
+    destruir_historial (historial);
+    destruir_configuracion (configuracion);
+        
     return 0;
 }
 
