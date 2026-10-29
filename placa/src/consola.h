@@ -7,6 +7,7 @@
 #include <string.h>
 #include <errno.h>
 #include <utils/conexion.h>
+#include <commons/string.h>
 
 #define TAM_LEIDO 100
 

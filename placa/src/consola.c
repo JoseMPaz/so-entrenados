@@ -42,16 +42,22 @@ void mostrar_consola (void)
 
 char *leer_consola(void)
 {
-    char *leido = NULL;
-    size_t tamanio = 0;
+    char buffer[100];
 
-    if (getline(&leido, &tamanio, stdin) == -1)
+    // fgets lee hasta 99 caracteres o hasta encontrar un '\n'
+    // Si se presiona Ctrl+C, fgets se interrumpe y devuelve NULL
+    if (fgets(buffer, sizeof(buffer), stdin) == NULL)
     {
-        free(leido);
         return NULL;
     }
 
-    leido[strcspn(leido, "\n")] = '\0';
+    // Limpiamos el salto de línea '\n' si está presente
+    buffer[strcspn(buffer, "\n")] = '\0';
+
+    // Pedimos memoria dinámica del tamaño justo y copiamos el contenido
+    // string_duplicate de las Commons hace el malloc + strcpy internamente.
+    // Si preferís C puro: char *leido = strdup(buffer);
+    char *leido = string_duplicate(buffer);
 
     return leido;
 }
@@ -86,6 +92,8 @@ bool hacer_consola(char *leido)
         
         case 3:
     		printf("Seleccionaste EXIT\n");
+    		printf("Modulo Placa finaliza finaliza ...\n\n\n");
+    		
     		return false;
 
         default:

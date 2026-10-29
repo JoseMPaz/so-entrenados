@@ -64,6 +64,8 @@ typedef struct //Job Control Block
 extern t_list * cores;
 extern sem_t mutex_cores;
 
+
+
 void destruir_nodo_core(void * elemento);
 void destruir_lista_cores (t_list * lista_a_destruir);
 

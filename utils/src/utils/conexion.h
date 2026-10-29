@@ -34,6 +34,7 @@ typedef struct
 
 extern volatile sig_atomic_t salir;
 
+
 int crear_socket (t_conexion tipo_conexion, const char * ip, const char * puerto);
 void conectar_a_servidor (int socket_cliente, char * ip_servidor, char * puerto_servidor);
 int recibir_operacion (int socket);
@@ -44,5 +45,6 @@ t_paquete * crear_paquete (t_operacion operacion);
 void destruir_paquete (t_paquete * paquete);
 t_list * recibir_carga_util (int socket);
 void manejar_sigint(int sig); 
+
 
 #endif

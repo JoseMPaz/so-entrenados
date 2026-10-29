@@ -13,5 +13,6 @@ extern t_list * cores;
 extern sem_t sem_core_disponible;
 
 void * servidor_planificador (void * socket);
+void *atender_core(void *arg);
 
 #endif

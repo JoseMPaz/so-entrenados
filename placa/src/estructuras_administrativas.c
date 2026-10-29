@@ -10,7 +10,7 @@ t_codigo_proceso * crear_codigo_proceso (uint32_t pid, char * path_job)
 	string_append (&path_instrucciones_job, path_job);
 	
 	FILE *archivo = fopen(path_instrucciones_job, "r");
-	printf ("%s\n", path_instrucciones_job);
+	//printf ("%s\n", path_instrucciones_job);
 	free (path_instrucciones_job);
 
 	

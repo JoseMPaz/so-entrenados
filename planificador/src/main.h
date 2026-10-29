@@ -20,6 +20,10 @@
 #include "configuracion_planificador.h"
 #include "estructuras_administrativas.h"
 #include "servidor_planificador.h"
+#include "manejar_senales.h"
+#include "planificador_largo_plazo.h"
+#include "planificador_corto_plazo.h"
+
 
 #define PATH_CONFIG 1
 
@@ -35,8 +39,32 @@ int socket_planificador_to_placa;
 
 // Tus estructuras globales sincronizadas
 t_list * cores = NULL;
-sem_t mutex_cores;
+
 sem_t sem_core_disponible;
+sem_t sem_grado_multiprogramacion;//Contador
+sem_t sem_ingresar_job_a_new;
+sem_t sem_ingresar_job_a_ready;
+sem_t sem_ingresar_job_a_exit;
+
+sem_t mutex_cores;
+sem_t mutex_new;
+sem_t mutex_ready;
+sem_t mutex_exit;
+
+/*Estructuras para gestion de jobs*/
+t_list * cola_de_new = NULL;
+t_list * cola_de_ready = NULL;
+t_list * cola_de_exec = NULL;
+t_list * cola_de_block = NULL;
+t_list * cola_de_exit = NULL;
+
+pthread_t hilo_servidor;
+pthread_t hilo_ingreso_de_jobs;
+pthread_t hilo_egreso_de_jobs;
+int socket_escucha_global;
+
+t_temporal * reloj_sistema;
+t_scheduler planificar_corto_plazo;//Puntero a funcion
 
 //Variables de configuración
 char * puerto_escucha = NULL;

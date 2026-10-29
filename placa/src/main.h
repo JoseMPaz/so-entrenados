@@ -21,6 +21,8 @@
 #include "servidor_placa.h"
 #include <pthread.h>
 #include <signal.h>
+#include "manejar_senales.h"
+#include "manejar_senales.h"
 
 #define PATH_CONFIG 1
 
@@ -45,6 +47,10 @@ int jid_a_buscar;
 
 t_bitarray* bitarray_offload;
 uint32_t bloques_totales_offload;
+
+pthread_t hilo_consola;
+pthread_t hilo_servidor;
+int socket_escucha_global = -1;
 
 //Variables de configuración
 char * puerto_escucha;

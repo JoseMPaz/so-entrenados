@@ -9,6 +9,46 @@ int main(int argc, char* argv[])
     saludar("core");
     validar_argumentos (argc, argv);
     
+    /*// ... Dentro de atender_core() en el servidor del Planificador ...
+operacion = recibir_operacion(socket_aceptado);
+
+switch (operacion)
+{
+    // ... tu Handshake inicial SOLICITUD_CONEXION_CORE_TO_PLANIF igual ...
+
+    case CORE_TO_PLANIF_PAGE_FAULT:
+        carga_util = recibir_carga_util(socket_aceptado);
+        
+        // El Core te va a mandar: JID, Contexto de ejecución actualizado y Nro Página del fallo [pág. 10, 19]
+        uint32_t jid_pf = Deserializar_uint32(carga_util);
+        t_registros_core registros_actualizados = Deserializar_registros(carga_util);
+        uint32_t pagina_fallada = Deserializar_uint32(carga_util);
+        
+        list_destroy_and_destroy_elements(carga_util, free);
+
+        // 1. Buscás el JCB en tus estructuras y le actualizás los registros devueltos [pág. 10]
+        t_jcb *job_pf = buscar_jcb_por_jid(jid_pf);
+        job_pf->contexto_de_ejecucion = registros_actualizados;
+        
+        // 2. Liberás el Core para que Corto Plazo pueda usarlo con otro Job [pág. 11]
+        marcar_core_como_libre_por_socket(socket_aceptado);
+        sem_post(&sem_core_disponible); 
+
+        // 3. Delegás el tratamiento del fallo al largo plazo / entrada-salida de forma asríncronica [pág. 10]
+        pthread_t hilo_tratamiento_pf;
+        t_argumentos_pf *args = malloc(sizeof(t_argumentos_pf));
+        args->job = job_pf;
+        args->pagina = pagina_fallada;
+        pthread_create(&hilo_tratamiento_pf, NULL, tratar_page_fault, args);
+        pthread_detach(hilo_tratamiento_pf);
+        break;
+
+    case CORE_TO_PLANIF_SYSCALL_EXIT:
+        // Caso análogo: sacás el contexto, marcas el Core como libre (sem_post), 
+        // pasás el Job a ESTADO_EXIT y tirás sem_post(&sem_pasaje_de_job_a_exit) [pág. 10, 11].
+        break;
+}*/
+    
     return 0;
 }
 

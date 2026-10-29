@@ -66,7 +66,9 @@ typedef enum
     // 5. RESPUESTAS GENÉRICAS PARA OPERACIONES
     // ==========================================
     OPERACION_OK,
-    OPERACION_ERROR
+    OPERACION_ERROR,
+    
+    PLANIF_TO_CORE_EJECUTAR_JOB
 } t_operacion;
 
 #endif
