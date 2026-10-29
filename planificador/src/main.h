@@ -37,6 +37,8 @@ volatile sig_atomic_t salir = 0;// Definición de la bandera segura ante un CTR+
 
 int socket_planificador_to_placa;
 
+
+
 // Tus estructuras globales sincronizadas
 t_list * cores = NULL;
 
@@ -66,6 +68,8 @@ int socket_escucha_global;
 t_temporal * reloj_sistema;
 t_scheduler planificar_corto_plazo;//Puntero a funcion
 
+int socket_escucha = -1; // La declarás global e inicializada en -1
+
 //Variables de configuración
 char * puerto_escucha = NULL;
 char * ip_placa = NULL;
@@ -81,5 +85,9 @@ int grado_multiprogramacion;
 char * path_datos = NULL;
 int retardo_loader;
 char * path_reportes = NULL;
+
+void inicializar_semaforos (void);
+int configurar_senales_planificador(void);
+uint32_t generar_jid (void);
 
 #endif

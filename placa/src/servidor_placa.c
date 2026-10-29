@@ -82,7 +82,7 @@ void * servidor_placa_to_planificador (void * socket)
 		// Si es -1, sabemos con total certeza que el Planificador se desconectó
 		if (operacion_recibida == -1) 
 		{
-			printf("[Placa]: El Planificador se ha desconectado de forma limpia o abrupta.\n");
+			fprintf(stderr, "%s\n", "[Placa]: El Planificador se ha desconectado de forma limpia o abrupta.");
 			break; // Rompe el while, sale del bucle y va directo al close(socket) final
 		}
 

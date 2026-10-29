@@ -11,7 +11,7 @@
 extern pthread_t hilo_servidor;
 extern pthread_t hilo_ingreso_de_jobs;
 extern pthread_t hilo_egreso_de_jobs;
-extern int socket_escucha_global;
+extern int socket_escucha;
 extern volatile sig_atomic_t salir;
 
 // 👈 AGREGÁ TUS SEMÁFOROS ACÁ COMO EXTERN:

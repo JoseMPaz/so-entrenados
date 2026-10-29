@@ -8,10 +8,10 @@ void manejar_sigint_planificador (int sig)
     // 🔥 SOLUCIÓN DEFINITIVA DE RED:
     // shutdown() destruye los canales de lectura y escritura del socket.
     // Esto obliga a accept() a destrabarse de inmediato devolviendo -1.
-    if (socket_escucha_global != -1) 
+    if (socket_escucha != -1) 
     {
-        shutdown(socket_escucha_global, SHUT_RDWR); // 👈 FORZAMOS EL DESBLOQUEO AQUÍ
-        close(socket_escucha_global); 
+        shutdown(socket_escucha, SHUT_RDWR); // 👈 FORZAMOS EL DESBLOQUEO AQUÍ
+        close(socket_escucha); 
     }
     
     // Despertamos el resto de los hilos de planificación

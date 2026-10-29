@@ -4,20 +4,20 @@
 // Estructura que modela el Contexto de Ejecución del Core 
 typedef struct //Se replica esta estructura en modulo Core
 {
-    uint32_t PC;  // Program Counter
-    uint32_t P0;  // Registros de dirección lógica de memoria
-    uint32_t P1;
-    uint32_t P2;
-    uint32_t P3;
-    uint32_t P4;
-    uint32_t P5;
-    uint32_t AX;  // Registros numéricos de propósito general
-    uint32_t BX;
-    uint32_t CX;
-    uint32_t DX;
-    uint32_t E1;  // Registros para operandos de entrenamiento
-    uint32_t E2;
-    uint32_t E3;
+    uint32_t pc;  // Program Counter
+    uint32_t p0;  // Registros de dirección lógica de memoria
+    uint32_t p1;
+    uint32_t p2;
+    uint32_t p3;
+    uint32_t p4;
+    uint32_t p5;
+    uint32_t ax;  // Registros numéricos de propósito general
+    uint32_t bx;
+    uint32_t cx;
+    uint32_t dx;
+    uint32_t e1;  // Registros para operandos de entrenamiento
+    uint32_t e2;
+    uint32_t e3;
 } t_registros_core;
 
 #endif
