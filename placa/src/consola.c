@@ -33,7 +33,7 @@ void *consola(void *arg)
 
 void mostrar_consola (void)
 {
-	printf ("%s\n", "*** Menu ***");
+	printf ("%s\n", " ********** Menu *********");
 	printf ("%s\n", "1) INFO"); 
 	printf ("%s\n", "2) TLS");
 	printf ("%s\n", "3) EXIT");
@@ -65,6 +65,13 @@ char *leer_consola(void)
 bool hacer_consola(char *leido)
 {
     char *ultimo_caracter_leido = NULL;
+    int marcos_libres;
+    int marcos_lockeados;
+    int marcos_ocupados;
+    double porcentaje_memoria_ocupada;
+    int bloques_ocupados;
+    double porcentaje_offload_ocupado; 
+    int jobs_actuales;
 
     if (strlen(leido) == 0)
     {
@@ -83,16 +90,38 @@ bool hacer_consola(char *leido)
     switch (opcion)
     {
         case 1:
-            printf("Seleccionaste INFO\n");
+        	printf(" ########## INFO #########\n");
+            marcos_libres = contar_marcos_libres ();
+            marcos_lockeados = contar_marcos_lockeados ();
+            marcos_ocupados = marcos_totales - marcos_libres;
+            porcentaje_memoria_ocupada = ( (double) marcos_ocupados / marcos_totales) * 100.0;
+            bloques_ocupados = contar_bloques_ocupados_offload();
+            porcentaje_offload_ocupado = ((double)bloques_ocupados / cantidad_bloques_totales) * 100.0;
+            jobs_actuales = list_size (instrucciones_de_jobs);
+
+
+            printf("Porcentaje de memoria ocupada: %6.2f %%\n", porcentaje_memoria_ocupada);
+            printf("Porcentaje de offload ocupado: %6.2f %%\n", porcentaje_offload_ocupado);
+            printf("Cantidad de marcos libres: %d\n", marcos_libres);
+            printf("Cantidad de marcos lockeados: %d\n", marcos_lockeados);
+            printf("Cantidad de Jobs actuales: %d\n", jobs_actuales);
+            printf("Cantidad de marcos totales: %d\n", marcos_totales);
+            printf("Cantidad total de bloques: %d\n", cantidad_bloques_totales);    
+            printf("Cantidad total de marcos: %d\n", marcos_totales); 
+            printf("Tamaño de la memoria de datos: %d [B]\n", tam_memoria);
+            printf("Tamaño del offload: %d [B]\n", tam_offload);
+            printf("Tamaño de pagina:   %d [B]\n", tam_pagina);
+            printf("Tamaño de marco:   %d [B]\n", tam_marco);
+            printf("Tamaño de bloque:   %d [B]\n", tam_bloque);
             break;
 
         case 2:
-            printf("Seleccionaste TLS\n");
+            printf(" ########## TLS #########\n");
             break;
         
         case 3:
-    		printf("Seleccionaste EXIT\n");
-    		printf("Modulo Placa finaliza finaliza ...\n\n\n");
+        	printf(" ########## EXIT #########\n");
+    		printf("Modulo Placa finaliza ...\n");
     		
     		return false;
 
